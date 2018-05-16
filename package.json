@@ -1,7 +1,7 @@
 {
-  "name": "express-typescript-boilerplate",
+  "name": "foodquest-kakao-chat",
   "version": "3.0.1",
-  "description": "A delightful way to building a Node.js RESTful API Services with beautiful code written in TypeScript",
+  "description": "Simple RESTful API Server for chatbotting in KAKAO",
   "main": "src/app.ts",
   "scripts": {
     "start": "nps",
