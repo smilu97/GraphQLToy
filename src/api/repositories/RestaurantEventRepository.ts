@@ -1,7 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { RestaurantEvent } from '../models/RestaurantEvent';
-import { Restaurant } from '../models/Restaurant';
-import { RestaurantArea } from '../models/RestaurantArea';
 
 @EntityRepository(RestaurantEvent)
 export class RestaurantEventRepository extends Repository<RestaurantEvent> {
@@ -15,22 +13,37 @@ export class RestaurantEventRepository extends Repository<RestaurantEvent> {
         where R.name = 'asdf' and R.category = 'qwer' and A.name = 'zxcv';
     */
     public async findByNameOrCategoryOrArea(name: string, category: string, area: string): Promise<RestaurantEvent[]> {
-        let conditions = {};
+        let firstWhere = 1;
+        let query = this.createQueryBuilder('E')
+            .select()
+            .leftJoin('restaurant', 'R', 'E.restaurantId = R.id')
+            .leftJoin('restaurant_areas_restaurant_area', 'RA', 'R.id = RA.restaurantId')
+            .leftJoin('restaurant_area', 'A', 'A.id = RA.restaurantAreaId')
+            .where(`R.name = ?`);
+
         if (name) {
-            conditions = { ...conditions, ...{ 'restaurant.name': name } };
+            query = query.where('R.name = :name', { name });
+            firstWhere = 0;
         }
         if (category) {
-            conditions = { ...conditions, ...{ 'restaurant.category': category } };
+            if (firstWhere) {
+                query = query.where('R.category = :category', { category });
+                firstWhere = 0;
+            } else {
+                query = query.andWhere('R.category = :category', { category });
+            }
         }
         if (area) {
-            conditions = { ...conditions, ...{ 'event.name': area } };
+            if (firstWhere) {
+                query = query.where('A.name = :area', { area });
+                firstWhere = 0;
+            } else {
+                query = query.andWhere('A.name = :area', { area });
+            }
         }
-        const restaurants = await this.createQueryBuilder('event')
-            .select()
-            .leftJoin(Restaurant, 'restaurant')
-            .leftJoin(RestaurantArea, 'area')
-            .where(conditions)
-            .getMany();
-        return restaurants;
+
+        console.log(query.getQuery());
+
+        return await query.getMany();
     }
 }

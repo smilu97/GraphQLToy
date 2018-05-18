@@ -2,7 +2,6 @@ import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 
 import { Logger, LoggerInterface } from '../../decorators/Logger';
-import { Restaurant } from '../models/Restaurant';
 import { RestaurantEventRepository } from '../repositories/RestaurantEventRepository';
 import { RestaurantEvent } from '../models/RestaurantEvent';
 
