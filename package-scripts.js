@@ -147,8 +147,15 @@ module.exports = {
             drop: {
                 script: runFast('./node_modules/typeorm/cli.js schema:drop'),
                 description: 'Drops the schema of the database'
-            }
-
+            },
+            sync: {
+                script: runFast('./node_modules/typeorm/cli.js schema:sync'),
+                description: 'Synchronize database'
+            },
+            generate: {
+                script: runFast('./node_modules/typeorm/cli.js migration:generate -n AGmigration'),
+                description: 'Auto-generate migration script'
+            },
         },
         /**
          * These run various kinds of tests. Default is unit.

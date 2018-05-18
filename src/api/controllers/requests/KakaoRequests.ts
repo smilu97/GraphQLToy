@@ -1,6 +1,6 @@
 
-export class KakaoPostMessageRequest {
-    public user_key: string;
-    public type: string;
-    public content: string;
+export interface KakaoPostMessageRequest {
+    user_key: string;
+    type: 'text' | 'photo';
+    content: string;
 }

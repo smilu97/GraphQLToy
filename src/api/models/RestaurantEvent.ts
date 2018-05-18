@@ -1,9 +1,9 @@
 import { IsNotEmpty } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Restaurant } from './Restaurant';
 
 @Entity()
-export class RestaurantArea {
+export class RestaurantEvent {
 
     @PrimaryGeneratedColumn('uuid')
     public id: string;
@@ -12,10 +12,12 @@ export class RestaurantArea {
     @Column()
     public name: string;
 
-    @ManyToMany(type => Restaurant, restaurant => restaurant.areas)
-    public restaurants: Restaurant[];
+    @ManyToOne(type => Restaurant, restaurant => restaurant.events)
+    @JoinColumn()
+    public restaurant: Restaurant;
 
     public toString(): string {
         return `${this.name}`;
     }
+
 }
