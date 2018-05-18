@@ -4,3 +4,7 @@ export interface KakaoPostMessageRequest {
     type: 'text' | 'photo';
     content: string;
 }
+
+export interface KakaoPostFriendRequest {
+    user_key: string;
+}

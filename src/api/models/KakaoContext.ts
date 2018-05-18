@@ -1,5 +1,6 @@
 
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { KAKAO } from '../constants/KakaoConstants';
 
 @Entity()
 export class KakaoContext {
@@ -16,8 +17,8 @@ export class KakaoContext {
     @Column()
     public area: string;
 
-    @Column({ default: 0 })
-    public receivingButton: number;
+    @Column({ default: KAKAO.status.NOT_STARTED })
+    public status: string;
 
     public toString(): string {
         return `${this.id}`;
