@@ -29,6 +29,7 @@ const filterTypes = [
 ];
 const filterButtons = filterTypes.map((ft) => ft.showing).concat([KAKAO.toFirstMent]);
 const statusToColumn = filterTypes.map((ft) => ({ [ft.status]: ft.column })).reduce((a, b) => ({ ...a, ...b }), {});
+const initButtons = ['이벤트 찾기'];
 
 @JsonController('/kakaochat')
 export class KakaoController {
@@ -51,7 +52,7 @@ export class KakaoController {
     public getKeyboard(): any {
         return {
             type: 'buttons',
-            buttons: ['이벤트 찾기'],
+            buttons: initButtons,
         };
     }
 
@@ -89,8 +90,13 @@ export class KakaoController {
             }
             if (text === KAKAO.toFirstMent) {
                 context.status = KAKAO.status.NOT_STARTED;
+                context.restaurantName = undefined;
+                context.category = undefined;
+                context.area = undefined;
                 this.kakaoContextService.update(context.id, context);
                 res.message.text = KAKAO.goneFirstMent;
+                res.keyboard.type = 'buttons';
+                res.keyboard.buttons = initButtons;
                 return res;
             }
             res.message.text = KAKAO.confusingMent;
