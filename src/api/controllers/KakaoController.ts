@@ -69,6 +69,11 @@ export class KakaoController {
         const text = body.content;
         const res = new KakaoPostMessageResponse();
 
+        if (context === undefined) {
+            res.message.text = '누구시죠?';
+            return res;
+        }
+
         if (context.status === KAKAO.status.NOT_STARTED) {
             // if (text === '이벤트 찾기')
             context.status = KAKAO.status.RECEIVING;
@@ -129,24 +134,27 @@ export class KakaoController {
     }
 
     @Post('/friend')
-    public handleNewFriend(@Body() body: KakaoPostFriendRequest): void {
+    public async handleNewFriend(@Body() body: KakaoPostFriendRequest): Promise<string> {
         const userKey = body.user_key;
         const context = new KakaoContext();
         context.id = userKey;
-        this.kakaoContextService.create(context);
+        await this.kakaoContextService.create(context);
+        return 'Success';
     }
 
     @Delete('/friend/:userKey')
-    public handleLoseFriend(@Param('userKey') userKey: string): void {
-        this.kakaoContextService.delete(userKey);
+    public async handleLoseFriend(@Param('userKey') userKey: string): Promise<string> {
+        await this.kakaoContextService.delete(userKey);
+        return 'Success';
     }
 
     @Delete('/chat_room/:userKey')
-    public async handleLeaveRoom(@Param('userKey') userKey: string): Promise<void> {
+    public async handleLeaveRoom(@Param('userKey') userKey: string): Promise<string> {
         const context = new KakaoContext();
         context.restaurantName = undefined;
         context.category = undefined;
         context.area = undefined;
         await this.kakaoContextService.update(userKey, context);
+        return 'Success';
     }
 }

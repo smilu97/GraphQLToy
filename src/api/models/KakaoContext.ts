@@ -8,13 +8,13 @@ export class KakaoContext {
     @PrimaryGeneratedColumn('uuid')
     public id: string;
 
-    @Column()
+    @Column({ nullable: true })
     public restaurantName: string;
 
-    @Column()
+    @Column({ nullable: true })
     public category: string;
 
-    @Column()
+    @Column({ nullable: true })
     public area: string;
 
     @Column({ default: KAKAO.status.NOT_STARTED })

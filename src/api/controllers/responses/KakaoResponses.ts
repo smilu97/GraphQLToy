@@ -26,7 +26,12 @@ export class KakaoPostMessageResponse {
     public keyboard: KakaoKeyboard;
 
     constructor(text?: string) {
-        this.message.text = text;
+        this.message = {
+            text,
+        };
+        this.keyboard = {
+            type: 'text',
+        };
     }
     public setKeyboardButtons(buttons: string[]): void {
         this.keyboard.type = 'buttons';
