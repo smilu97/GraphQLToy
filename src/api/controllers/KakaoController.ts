@@ -9,35 +9,25 @@ import { RestaurantEvent } from '../models/RestaurantEvent';
 import { KakaoContextService } from '../services/KakaoContextService';
 import { KakaoContext } from '../models/KakaoContext';
 import { KAKAO } from '../constants/KakaoConstants';
+import { kakaoBotControllers } from '../decorators/KakaoDecorator';
+import { KakaoContextPolicies } from '../services/KakaoContextPolicies';
 
-const filterTypes = [
-    {
-        showing: '식당이름',
-        column: 'restaurantName',
-        status: KAKAO.status.RECEIVING_NAME,
-    },
-    {
-        showing: '지역이름',
-        column: 'area',
-        status: KAKAO.status.RECEIVING_AREA,
-    },
-    {
-        showing: '카테고리',
-        column: 'category',
-        status: KAKAO.status.RECEIVING_CATEGORY,
-    },
-];
-const filterButtons = filterTypes.map((ft) => ft.showing).concat([KAKAO.toFirstMent]);
-const statusToColumn = filterTypes.map((ft) => ({ [ft.status]: ft.column })).reduce((a, b) => ({ ...a, ...b }), {});
 const initButtons = ['이벤트 찾기'];
 
 @JsonController('/kakaochat')
 export class KakaoController {
 
+    private kakaoContextPolicies: KakaoContextPolicies;
+
     constructor(
         private restaurantEventService: RestaurantEventService,
         private kakaoContextService: KakaoContextService
-    ) {}
+    ) {
+        this.kakaoContextPolicies = new KakaoContextPolicies(
+            kakaoContextService,
+            restaurantEventService
+        );
+    }
 
     @Post('/test')
     public kakaoTest(@Body() body: {
@@ -66,7 +56,6 @@ export class KakaoController {
         }
 
         const context = await this.kakaoContextService.findOne(userKey);
-        const text = body.content;
         const res = new KakaoPostMessageResponse();
 
         if (context === undefined) {
@@ -74,62 +63,17 @@ export class KakaoController {
             return res;
         }
 
-        if (context.status === KAKAO.status.NOT_STARTED) {
-            // if (text === '이벤트 찾기')
-            context.status = KAKAO.status.RECEIVING;
-            this.kakaoContextService.update(context.id, context);
-            res.message.text = KAKAO.askFilterMent;
-            res.keyboard.type = 'buttons';
-            res.keyboard.buttons = filterButtons;
-            return res;
-        }
+        const handlerProperty = kakaoBotControllers[context.status];
 
-        if (context.status === KAKAO.status.RECEIVING) {
-            for (const filterType of filterTypes) {
-                if (text === filterType.showing) {
-                    context.status = filterType.status;
-                    this.kakaoContextService.update(context.id, context);
-                    res.message.text = `${filterType.showing}을 입력해주세요`;
-                    return res;
-                }
+        if (handlerProperty !== undefined) {
+            const handlerResult = this.kakaoContextPolicies[handlerProperty](body, res, context);
+            if (typeof handlerResult === typeof Promise) {
+                await handlerResult;
             }
-            if (text === KAKAO.toFirstMent) {
-                context.status = KAKAO.status.NOT_STARTED;
-                context.restaurantName = undefined;
-                context.category = undefined;
-                context.area = undefined;
-                this.kakaoContextService.update(context.id, context);
-                res.message.text = KAKAO.goneFirstMent;
-                res.keyboard.type = 'buttons';
-                res.keyboard.buttons = initButtons;
-                return res;
-            }
+        } else {
             res.message.text = KAKAO.confusingMent;
-            return res;
         }
 
-        if (context.status === KAKAO.status.RECEIVING_AREA ||
-            context.status === KAKAO.status.RECEIVING_NAME ||
-            context.status === KAKAO.status.RECEIVING_CATEGORY) {
-
-            context[statusToColumn[context.status]] = text;
-            res.message.text = (await this.restaurantEventService.findByNameOrCategoryOrArea(
-                context.restaurantName, context.category, context.area))
-                .map((evt) => evt.name)
-                .reduce((a, b) => `${a}\n${b}`, '');
-            if (res.message.text.length === 0) {
-                res.message.text = KAKAO.noResultMent;
-            }
-            context.status = KAKAO.status.RECEIVING;
-            this.kakaoContextService.update(context.id, context);
-
-            res.keyboard.type = 'buttons';
-            res.keyboard.buttons = filterButtons;
-
-            return res;
-        }
-
-        res.message.text = KAKAO.confusingMent;
         return res;
     }
 
