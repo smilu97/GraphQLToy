@@ -67,10 +67,7 @@ export class KakaoController {
         const handlerProperty = kakaoBotControllers[context.status];
 
         if (handlerProperty !== undefined) {
-            const handlerResult = this.kakaoContextPolicies[handlerProperty](body, res, context);
-            if (typeof handlerResult === typeof Promise) {
-                await handlerResult;
-            }
+            await this.kakaoContextPolicies[handlerProperty](body, res, context);
         } else {
             res.message.text = KAKAO.confusingMent;
         }

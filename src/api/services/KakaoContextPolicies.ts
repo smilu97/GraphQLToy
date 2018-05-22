@@ -35,10 +35,10 @@ export class KakaoContextPolicies {
     ) {}
 
     @KakaoContextController(KAKAO.status.NOT_STARTED)
-    public handleNotStarted(
+    public async handleNotStarted(
         req: KakaoPostMessageRequest,
         res: KakaoPostMessageResponse,
-        context: KakaoContext): void {
+        context: KakaoContext): Promise<void> {
 
         // if (text === '이벤트 찾기')
         context.status = KAKAO.status.RECEIVING;
@@ -49,10 +49,10 @@ export class KakaoContextPolicies {
     }
 
     @KakaoContextController(KAKAO.status.RECEIVING)
-    public handleReceiving(
+    public async handleReceiving(
         req: KakaoPostMessageRequest,
         res: KakaoPostMessageResponse,
-        context: KakaoContext): void {
+        context: KakaoContext): Promise<void> {
 
         const text = req.content;
         for (const filterType of filterTypes) {
@@ -64,17 +64,15 @@ export class KakaoContextPolicies {
             }
         }
         if (text === KAKAO.toFirstMent) {
-            context.status = KAKAO.status.NOT_STARTED;
-            context.restaurantName = undefined;
-            context.category = undefined;
-            context.area = undefined;
-            this.kakaoContextService.update(context.id, context);
+            this.kakaoContextService.delete(context.id);
             res.message.text = KAKAO.goneFirstMent;
             res.keyboard.type = 'buttons';
             res.keyboard.buttons = initButtons;
             return;
         }
         res.message.text = KAKAO.confusingMent;
+        res.keyboard.type = 'buttons';
+        res.keyboard.buttons = filterButtons;
     }
 
     @KakaoContextController(KAKAO.status.RECEIVING_AREA)
@@ -100,5 +98,4 @@ export class KakaoContextPolicies {
         res.keyboard.type = 'buttons';
         res.keyboard.buttons = filterButtons;
     }
-
 }
