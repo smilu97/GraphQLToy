@@ -55,12 +55,13 @@ export class KakaoController {
             return new KakaoPostMessageResponse(KAKAO.noImageMent);
         }
 
-        const context = await this.kakaoContextService.findOne(userKey);
+        let context = await this.kakaoContextService.findOne(userKey);
         const res = new KakaoPostMessageResponse();
 
         if (context === undefined) {
-            res.message.text = '누구시죠?';
-            return res;
+            context = new KakaoContext();
+            context.id = userKey;
+            context = await this.kakaoContextService.create(context);
         }
 
         const handlerProperty = kakaoBotControllers[context.status];
