@@ -94,7 +94,7 @@ export class KakaoContextPolicies {
             res.message.text = KAKAO.noResultMent;
         }
 
-        res.message.text += '\n현재 필터 정보:\n' + this.makeFilterContext(context);
+        res.message.text += this.makeFilterContext(context);
 
         context.status = KAKAO.status.RECEIVING;
         this.kakaoContextService.update(context.id, context);
@@ -110,11 +110,11 @@ export class KakaoContextPolicies {
             value: context[item.column],
         }));
 
-        const isExist = properties.reduce((a, b) => (a || (b === undefined)), false);
+        const isExist = properties.reduce((a, b) => (a || (b !== undefined)), false);
         if (!isExist) {
             return '';
         }
 
-        return properties.map((item) => (`${item.name}: ${item.value}`)).reduce((a, b) => (`${a}\n${b}`), '');
+        return '\n현재 필터 정보:\n' + properties.map((item) => (`${item.name}: ${item.value}`)).reduce((a, b) => (`${a}\n${b}`), '');
     }
 }
