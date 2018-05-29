@@ -89,11 +89,13 @@ export class KakaoContextPolicies {
             context.restaurantName, context.category, context.area))
             .map((evt) => evt.name)
             .reduce((a, b) => `${a}\n${b}`, '');
-        res.message.text += this.makeFilterContext(context);
 
         if (res.message.text.length === 0) {
             res.message.text = KAKAO.noResultMent;
         }
+
+        res.message.text += '\n현재 필터 정보:\n' + this.makeFilterContext(context);
+
         context.status = KAKAO.status.RECEIVING;
         this.kakaoContextService.update(context.id, context);
 
