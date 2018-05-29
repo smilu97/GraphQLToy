@@ -11,7 +11,6 @@ export class CreatePets implements Seed {
         await times(10, async (n) => {
             const pet = await factory(Pet)().seed();
             const user = await factory(User)().make();
-            user.pets = [pet];
             return await em.save(user);
         });
     }

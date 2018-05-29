@@ -89,6 +89,8 @@ export class KakaoContextPolicies {
             context.restaurantName, context.category, context.area))
             .map((evt) => evt.name)
             .reduce((a, b) => `${a}\n${b}`, '');
+        res.message.text += this.makeFilterContext(context);
+
         if (res.message.text.length === 0) {
             res.message.text = KAKAO.noResultMent;
         }
@@ -97,5 +99,20 @@ export class KakaoContextPolicies {
 
         res.keyboard.type = 'buttons';
         res.keyboard.buttons = filterButtons;
+    }
+
+    private makeFilterContext(context: KakaoContext): string {
+
+        const properties = filterTypes.map(item => ({
+            name: item.showing,
+            value: context[item.column],
+        }));
+
+        const isExist = properties.reduce((a, b) => (a || (b === undefined)), false);
+        if (!isExist) {
+            return '';
+        }
+
+        return properties.map((item) => (`${item.name}: ${item.value}`)).reduce((a, b) => (`${a}\n${b}`), '');
     }
 }

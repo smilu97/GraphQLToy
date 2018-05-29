@@ -1,7 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
-import { Pet } from './Pet';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -10,22 +8,23 @@ export class User {
     public id: string;
 
     @IsNotEmpty()
-    @Column({ name: 'first_name' })
-    public firstName: string;
+    @Column()
+    public name: string;
 
     @IsNotEmpty()
-    @Column({ name: 'last_name' })
-    public lastName: string;
+    @Column()
+    public password: string;
+
+    @IsNotEmpty()
+    @Column()
+    public role: string;
 
     @IsNotEmpty()
     @Column()
     public email: string;
 
-    @OneToMany(type => Pet, pet => pet.user)
-    public pets: Pet[];
-
     public toString(): string {
-        return `${this.firstName} ${this.lastName} (${this.email})`;
+        return `${this.name} (${this.role})`;
     }
 
 }
