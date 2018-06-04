@@ -8,7 +8,7 @@ import { RestaurantEventService } from './RestaurantEventService';
 
 const filterTypes = [
     {
-        showing: '식당이름',
+        showing: '음식점 이름',
         column: 'restaurantName',
         status: KAKAO.status.RECEIVING_NAME,
     },
@@ -25,7 +25,7 @@ const filterTypes = [
 ];
 const filterButtons = filterTypes.map((ft) => ft.showing).concat([KAKAO.toFirstMent]);
 const statusToColumn = filterTypes.map((ft) => ({ [ft.status]: ft.column })).reduce((a, b) => ({ ...a, ...b }), {});
-const initButtons = ['이벤트 찾기'];
+const initButtons = ['음식점 이벤트 찾기'];
 
 export class KakaoContextPolicies {
 
@@ -40,7 +40,7 @@ export class KakaoContextPolicies {
         res: KakaoPostMessageResponse,
         context: KakaoContext): Promise<void> {
 
-        // if (text === '이벤트 찾기')
+        // if (text === '음식점 이벤트 찾기')
         context.status = KAKAO.status.RECEIVING;
         this.kakaoContextService.update(context.id, context);
         res.message.text = KAKAO.askFilterMent;

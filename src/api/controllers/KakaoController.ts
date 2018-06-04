@@ -12,7 +12,7 @@ import { KAKAO } from '../constants/KakaoConstants';
 import { kakaoBotControllers } from '../decorators/KakaoDecorator';
 import { KakaoContextPolicies } from '../services/KakaoContextPolicies';
 
-const initButtons = ['이벤트 찾기'];
+const initButtons = ['음식점 이벤트 찾기'];
 
 @JsonController('/kakaochat')
 export class KakaoController {
