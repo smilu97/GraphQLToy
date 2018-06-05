@@ -6,7 +6,7 @@ import { Restaurant } from '../models/Restaurant';
 import { RestaurantRepository } from '../repositories/RestaurantRepository';
 
 @Service()
-export class PetService {
+export class RestaurantService {
 
     constructor(
         @OrmRepository() private restaurantRepository: RestaurantRepository,
