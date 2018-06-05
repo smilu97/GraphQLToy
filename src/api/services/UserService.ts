@@ -7,8 +7,16 @@ import { User } from '../models/User';
 import { UserRepository } from '../repositories/UserRepository';
 import { events } from '../subscribers/events';
 
+import crypto from 'crypto';
+
 @Service()
 export class UserService {
+
+    public static encryptPassword(password: string): string {
+        return crypto.createHmac('sha256', 'bluefrog88!')
+            .update(password)
+            .digest('hex');
+    }
 
     constructor(
         @OrmRepository() private userRepository: UserRepository,
@@ -28,6 +36,8 @@ export class UserService {
 
     public async create(user: User): Promise<User> {
         this.log.info('Create a new user => ', user.toString());
+        user.role = 'USER';
+        user.password = UserService.encryptPassword(user.password);
         const newUser = await this.userRepository.save(user);
         this.eventDispatcher.dispatch(events.user.created, newUser);
         return newUser;

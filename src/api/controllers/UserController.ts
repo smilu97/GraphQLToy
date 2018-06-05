@@ -6,7 +6,6 @@ import { UserNotFoundError } from '../errors/UserNotFoundError';
 import { User } from '../models/User';
 import { UserService } from '../services/UserService';
 
-@Authorized()
 @JsonController('/users')
 export class UserController {
 
@@ -14,6 +13,7 @@ export class UserController {
         private userService: UserService
     ) { }
 
+    @Authorized()
     @Get()
     public find( @CurrentUser() user?: User): Promise<User[]> {
         return this.userService.find();
@@ -30,11 +30,13 @@ export class UserController {
         return this.userService.create(user);
     }
 
+    @Authorized()
     @Put('/:id')
     public update( @Param('id') id: string, @Body() user: User): Promise<User> {
         return this.userService.update(id, user);
     }
 
+    @Authorized()
     @Delete('/:id')
     public delete( @Param('id') id: string): Promise<void> {
         return this.userService.delete(id);

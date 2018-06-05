@@ -25,7 +25,9 @@ export function authorizationChecker(connection: Connection): (action: Action, r
 
         // Request user info at auth0 with the provided token
         try {
-            action.request.tokeninfo = token;
+            const sp = atob(token).split(':');
+            action.request.name = sp[0];
+            action.request.password = sp[1];
             log.info('Successfully checked token');
             return true;
         } catch (e) {
