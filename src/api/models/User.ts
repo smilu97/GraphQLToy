@@ -1,5 +1,7 @@
 import { IsNotEmpty } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Restaurant } from './Restaurant';
+import { RestaurantEvent } from './RestaurantEvent';
 
 @Entity()
 export class User {
@@ -22,6 +24,12 @@ export class User {
     @IsNotEmpty()
     @Column()
     public email: string;
+
+    @OneToMany(type => Restaurant, restaurant => restaurant.owner)
+    public restaurants: Restaurant[];
+
+    @OneToMany(type => RestaurantEvent, event => event.publisher)
+    public events: RestaurantEvent[];
 
     public toString(): string {
         return `${this.name} (${this.role})`;

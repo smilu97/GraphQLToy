@@ -2,6 +2,7 @@ import { Connection } from 'typeorm';
 
 import { User } from '../../../src/api/models/User';
 import { Factory, Seed } from '../../lib/seed/types';
+import { UserService } from '../../api/services/UserService';
 
 export class CreateBruce implements Seed {
 
@@ -31,7 +32,7 @@ export class CreateBruce implements Seed {
         const user = new User();
         user.email = 'bruce.wayne@wayne-enterprises.com';
         user.name = 'Bruce';
-        user.password = 'bruce1234';
+        user.password = UserService.encryptPassword('bruce1234');
         user.role = 'USER';
         return await em.save(user);
     }

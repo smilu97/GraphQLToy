@@ -15,7 +15,7 @@ export class AuthService {
     }
 
     public parseTokenFromRequest(req: express.Request): string | undefined {
-        const authorization = req.header('authorization');
+        const authorization = req.header('Authorization');
 
         // Retrieve the token form the Authorization header
         if (authorization && authorization.split(' ')[0] === 'Basic') {

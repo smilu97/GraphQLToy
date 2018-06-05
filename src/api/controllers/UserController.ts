@@ -15,8 +15,8 @@ export class UserController {
 
     @Authorized()
     @Get()
-    public find( @CurrentUser() user?: User): Promise<User[]> {
-        return this.userService.find();
+    public async find( @CurrentUser() user?: User): Promise<User> {
+        return user;
     }
 
     @Get('/:id')

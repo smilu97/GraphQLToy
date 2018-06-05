@@ -7,15 +7,16 @@ import { User } from '../models/User';
 import { UserRepository } from '../repositories/UserRepository';
 import { events } from '../subscribers/events';
 
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 
 @Service()
 export class UserService {
 
     public static encryptPassword(password: string): string {
-        return crypto.createHmac('sha256', 'bluefrog88!')
-            .update(password)
-            .digest('hex');
+        const res = crypto.createHash('sha256')
+            .update(password + 'bluefrog88')
+            .digest('base64');
+        return res;
     }
 
     constructor(
@@ -46,6 +47,8 @@ export class UserService {
     public update(id: string, user: User): Promise<User> {
         this.log.info('Update a user');
         user.id = id;
+        user.role = 'USER';
+        user.password = undefined;
         return this.userRepository.save(user);
     }
 

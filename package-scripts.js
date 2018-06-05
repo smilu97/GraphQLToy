@@ -136,6 +136,14 @@ module.exports = {
                 ),
                 description: 'Downgrades the database'
             },
+            reset: {
+                script: series(
+                    'nps db.drop',
+                    'nps db.sync',
+                    'nps db.seed'
+                ),
+                description: 'drop, sync, seed',
+            },
             seed: {
                 script: series(
                     'nps banner.seed',
