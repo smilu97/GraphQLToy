@@ -2,7 +2,7 @@ import {
     Body, JsonController, Post
 } from 'routing-controllers';
 
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 // import { UserNotFoundError } from '../errors/UserNotFoundError';
 import { User } from '../models/User';
 import { UserService } from '../services/UserService';

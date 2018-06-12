@@ -4,7 +4,7 @@ import { Connection } from 'typeorm';
 
 import { Logger } from '../lib/logger';
 import { AuthService } from './AuthService';
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { env } from '../env';
 
 export function authorizationChecker(connection: Connection): (action: Action, roles: any[]) => Promise<boolean> | boolean {
