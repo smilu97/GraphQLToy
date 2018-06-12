@@ -18,7 +18,7 @@ export class AuthService {
         const authorization = req.header('Authorization');
 
         // Retrieve the token form the Authorization header
-        if (authorization && authorization.split(' ')[0] === 'Basic') {
+        if (authorization && authorization.split(' ')[0] === 'Bearer') {
             this.log.info('Token provided by the client');
             return authorization.split(' ')[1];
         }

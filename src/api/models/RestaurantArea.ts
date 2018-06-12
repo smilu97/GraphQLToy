@@ -13,7 +13,7 @@ export class RestaurantArea {
     public name: string;
 
     @ManyToMany(type => Restaurant, restaurant => restaurant.areas)
-    public restaurants: Restaurant[];
+    public restaurants?: Restaurant[];
 
     public toString(): string {
         return `${this.name}`;

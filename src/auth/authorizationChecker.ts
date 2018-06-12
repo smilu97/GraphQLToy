@@ -4,8 +4,8 @@ import { Connection } from 'typeorm';
 
 import { Logger } from '../lib/logger';
 import { AuthService } from './AuthService';
-
-import * as atob from 'atob';
+import jwt from 'jsonwebtoken';
+import { env } from '../env';
 
 export function authorizationChecker(connection: Connection): (action: Action, roles: any[]) => Promise<boolean> | boolean {
     const log = new Logger(__filename);
@@ -27,9 +27,8 @@ export function authorizationChecker(connection: Connection): (action: Action, r
 
         // Request user info at auth0 with the provided token
         try {
-            const sp = atob(token).split(':');
-            action.request.name = sp[0];
-            action.request.password = sp[1];
+            const decoded = jwt.verify(token, env.app.secret);
+            action.request.decoded = decoded;
             log.info('Successfully checked token');
             return true;
         } catch (e) {

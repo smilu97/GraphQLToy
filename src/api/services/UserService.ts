@@ -8,6 +8,7 @@ import { UserRepository } from '../repositories/UserRepository';
 import { events } from '../subscribers/events';
 
 import * as crypto from 'crypto';
+import { FacebookLoginRequest } from '../controllers/requests/FacebookRequests';
 
 @Service()
 export class UserService {
@@ -35,13 +36,33 @@ export class UserService {
         return this.userRepository.findOne({ id });
     }
 
+    public async findWithEmailPassword(email: string, password: string): Promise<User | undefined> {
+        password = UserService.encryptPassword(password);
+        const user = await this.userRepository.findOne({
+            email, password,
+        });
+        return user;
+    }
+
     public async create(user: User): Promise<User> {
         this.log.info('Create a new user => ', user.toString());
+        if (user.password.length === 0) {
+            return undefined;
+        }
         user.role = 'USER';
         user.password = UserService.encryptPassword(user.password);
+        user.type = 'local';
         const newUser = await this.userRepository.save(user);
         this.eventDispatcher.dispatch(events.user.created, newUser);
         return newUser;
+    }
+
+    public async createWithFacebook(req: FacebookLoginRequest): Promise<User> {
+        return await this.userRepository.create({
+            id: 'fb:' + req.profile.id,
+            role: 'USER',
+            type: 'facebook',
+        });
     }
 
     public update(id: string, user: User): Promise<User> {

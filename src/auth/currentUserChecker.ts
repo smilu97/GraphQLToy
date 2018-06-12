@@ -3,7 +3,6 @@ import { Connection } from 'typeorm';
 
 import { User } from '../api/models/User';
 import { Logger } from '../lib/logger';
-import { UserService } from '../api/services/UserService';
 
 export function currentUserChecker(connection: Connection): (action: Action) => Promise<User | undefined> {
     const log = new Logger(__filename);
@@ -12,14 +11,12 @@ export function currentUserChecker(connection: Connection): (action: Action) => 
         // here you can use request/response objects from action
         // you need to provide a user object that will be injected in controller actions
         // demo code:
-        const name: string = action.request.name;
-        const password: string = UserService.encryptPassword(action.request.password);
+        const id = action.request.decoded.id;
 
         const em = connection.createEntityManager();
         const user = await em.findOne<User>(User, {
             where: {
-                name,
-                password,
+                id,
             },
         });
         if (user) {

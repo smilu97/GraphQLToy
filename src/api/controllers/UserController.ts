@@ -2,9 +2,13 @@ import {
     Authorized, Body, CurrentUser, Delete, Get, JsonController, OnUndefined, Param, Post, Put
 } from 'routing-controllers';
 
-import { UserNotFoundError } from '../errors/UserNotFoundError';
+import jwt from 'jsonwebtoken';
+// import { UserNotFoundError } from '../errors/UserNotFoundError';
 import { User } from '../models/User';
 import { UserService } from '../services/UserService';
+import { FacebookLoginRequest } from './requests/FacebookRequests';
+import facebookVerifier from './verifiers/FacebookVerifier';
+import { env } from '../../env';
 
 @JsonController('/users')
 export class UserController {
@@ -13,33 +17,111 @@ export class UserController {
         private userService: UserService
     ) { }
 
-    @Authorized()
-    @Get()
-    public async find( @CurrentUser() user?: User): Promise<User> {
-        return user;
+    @Post('/auth/facebook')
+    public async authFacebook( @Body() body: FacebookLoginRequest ): Promise<{
+        success: boolean,
+        user?: User,
+        token?: string,
+        error?: string,
+    }> {
+        if (await facebookVerifier(body) === false) {
+            return {
+                error: 'Strange facebook login request',
+                success: false,
+            };
+        }
+        const localId = 'fb:' + body.profile.id;
+        let user = await this.userService.findOne(localId);
+        if (!user) {
+            user = await this.userService.createWithFacebook(body);
+        }
+        const token = jwt.sign({
+            id: localId,
+        }, env.app.secret);
+        return {
+            success: true,
+            user,
+            token,
+        };
     }
 
-    @Get('/:id')
-    @OnUndefined(UserNotFoundError)
-    public one( @Param('id') id: string): Promise<User | undefined> {
-        return this.userService.findOne(id);
+    @Get('/auth')
+    public async find( @Body() body: { email: string, password: string }): Promise<{
+        success: boolean,
+        user?: User,
+        token?: string,
+        error?: string,
+    }> {
+        const { email, password } = body;
+        const user = await this.userService.findWithEmailPassword(email, password);
+        if (user) {
+            const token = jwt.sign({
+                id: user.id,
+            }, env.app.secret);
+            return {
+                success: true,
+                user,
+                token,
+            };
+        } else {
+            return {
+                success: false,
+                error: 'User not found',
+            };
+        }
     }
 
     @Post()
-    public create( @Body() user: User): Promise<User> {
-        return this.userService.create(user);
+    public async create( @Body() userData: User): Promise<{
+        success: boolean,
+        user?: User,
+        error?: any,
+    }> {
+        try {
+            const user = await this.userService.create(userData);
+            if (user) {
+                return {
+                    success: true,
+                    user,
+                };
+            } else {
+                return {
+                    success: false,
+                    error: 'Failed to create user',
+                };
+            }
+        } catch (e) {
+            return {
+                success: false,
+                error: e,
+            };
+        }
     }
 
     @Authorized()
-    @Put('/:id')
-    public update( @Param('id') id: string, @Body() user: User): Promise<User> {
-        return this.userService.update(id, user);
+    @Put()
+    public async update( @CurrentUser() user: User, @Body() userData: User): Promise<{
+        success: boolean,
+    }> {
+        try {
+            await this.userService.update(user.id, user);
+            return { success: true };
+        } catch (e) {
+            return { success: false };
+        }
     }
 
     @Authorized()
-    @Delete('/:id')
-    public delete( @Param('id') id: string): Promise<void> {
-        return this.userService.delete(id);
+    @Delete()
+    public async delete( @CurrentUser() user: User): Promise<{
+        success: boolean,
+    }> {
+        try {
+            await this.userService.delete(user.id);
+            return { success: true };
+        } catch (e) {
+            return { success: false };
+        }
     }
 
 }

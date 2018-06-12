@@ -13,9 +13,8 @@ export class User {
     @Column()
     public name: string;
 
-    @IsNotEmpty()
     @Column()
-    public password: string;
+    public password?: string;
 
     @IsNotEmpty()
     @Column()
@@ -25,14 +24,17 @@ export class User {
     @Column()
     public email: string;
 
+    @IsNotEmpty()
+    @Column()
+    public type: string;
+
     @OneToMany(type => Restaurant, restaurant => restaurant.owner)
-    public restaurants: Restaurant[];
+    public restaurants?: Restaurant[];
 
     @OneToMany(type => RestaurantEvent, event => event.publisher)
-    public events: RestaurantEvent[];
+    public events?: RestaurantEvent[];
 
     public toString(): string {
         return `${this.name} (${this.role})`;
     }
-
 }
