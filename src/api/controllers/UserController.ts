@@ -1,5 +1,5 @@
 import {
-    Authorized, Body, CurrentUser, Delete, Get, JsonController, Post, Put
+    Authorized, Body, CurrentUser, Delete, JsonController, Post, Put
 } from 'routing-controllers';
 
 import jwt from 'jsonwebtoken';
@@ -21,7 +21,7 @@ export class UserController {
     public async authFacebook( @Body() body: FacebookLoginRequest ): Promise<{
         success: boolean,
         user?: User,
-        token?: string,
+        jwtToken?: string,
         error?: string,
     }> {
         if (await facebookVerifier(body) === false) {
@@ -35,33 +35,33 @@ export class UserController {
         if (!user) {
             user = await this.userService.createWithFacebook(body);
         }
-        const token = jwt.sign({
+        const jwtToken = jwt.sign({
             id: localId,
         }, env.app.secret);
         return {
             success: true,
             user,
-            token,
+            jwtToken,
         };
     }
 
-    @Get('/auth')
+    @Post('/auth/local')
     public async find( @Body() body: { email: string, password: string }): Promise<{
         success: boolean,
         user?: User,
-        token?: string,
+        jwtToken?: string,
         error?: string,
     }> {
         const { email, password } = body;
         const user = await this.userService.findWithEmailPassword(email, password);
         if (user) {
-            const token = jwt.sign({
+            const jwtToken = jwt.sign({
                 id: user.id,
             }, env.app.secret);
             return {
                 success: true,
                 user,
-                token,
+                jwtToken,
             };
         } else {
             return {
