@@ -1,5 +1,5 @@
 import {
-    Authorized, Body, CurrentUser, Delete, Get, JsonController, OnUndefined, Param, Post, Put
+    Authorized, Body, CurrentUser, Delete, Get, JsonController, Post, Put
 } from 'routing-controllers';
 
 import jwt from 'jsonwebtoken';
