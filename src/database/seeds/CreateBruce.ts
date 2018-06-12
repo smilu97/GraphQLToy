@@ -34,6 +34,7 @@ export class CreateBruce implements Seed {
         user.name = 'Bruce';
         user.password = UserService.encryptPassword('bruce1234');
         user.role = 'USER';
+        user.type = 'local';
         return await em.save(user);
     }
 

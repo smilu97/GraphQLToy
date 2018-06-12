@@ -15,5 +15,6 @@ define(User, (faker: typeof Faker, settings: { role: string }) => {
     user.email = email;
     user.password = password;
     user.role = 'USER';
+    user.type = 'local';
     return user;
 });
