@@ -78,7 +78,11 @@ export class AuthController {
         error?: any,
     }> {
         try {
-            const user = await this.userService.create(userData);
+            const u = new User();
+            u.email = userData.email;
+            u.name = userData.name;
+            u.password = userData.password;
+            const user = await this.userService.create(u);
             if (user) {
                 return {
                     success: true,
@@ -91,6 +95,7 @@ export class AuthController {
                 };
             }
         } catch (e) {
+            console.log(e);
             return {
                 success: false,
                 error: e,
