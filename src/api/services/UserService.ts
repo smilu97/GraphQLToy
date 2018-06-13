@@ -9,6 +9,8 @@ import { events } from '../subscribers/events';
 
 import * as crypto from 'crypto';
 import { FacebookLoginRequest } from '../controllers/requests/FacebookRequests';
+import { RestaurantRepository } from '../repositories/RestaurantRepository';
+import { Restaurant } from '../models/Restaurant';
 
 @Service()
 export class UserService {
@@ -22,6 +24,7 @@ export class UserService {
 
     constructor(
         @OrmRepository() private userRepository: UserRepository,
+        @OrmRepository() private restaurantRepository: RestaurantRepository,
         @EventDispatcher() private eventDispatcher: EventDispatcherInterface,
         @Logger(__filename) private log: LoggerInterface
     ) { }
@@ -77,6 +80,15 @@ export class UserService {
         this.log.info('Delete a user');
         await this.userRepository.delete(id);
         return;
+    }
+
+    public async findRestaurants(user: User): Promise<Restaurant[]> {
+        const restaurants = await this.restaurantRepository.find({
+            where: {
+                ownerId: user.id,
+            },
+        });
+        return restaurants;
     }
 
 }

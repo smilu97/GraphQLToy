@@ -13,14 +13,14 @@ export class RestaurantEventService {
         @Logger(__filename) private log: LoggerInterface
     ) { }
 
-    public find(): Promise<RestaurantEvent[]> {
+    public async find(): Promise<RestaurantEvent[]> {
         this.log.info('Find all restaurantEvents');
-        return this.restaurantEventRepository.find();
+        return await this.restaurantEventRepository.find();
     }
 
-    public findByName(name: string): Promise<RestaurantEvent[]> {
+    public async findByName(name: string): Promise<RestaurantEvent[]> {
         this.log.info('Find all restaurantEvents that name is', name);
-        return this.restaurantEventRepository.find({
+        return await this.restaurantEventRepository.find({
             where: {
                 name,
             },
@@ -38,10 +38,10 @@ export class RestaurantEventService {
         return newEvent;
     }
 
-    public update(id: string, event: RestaurantEvent): Promise<RestaurantEvent> {
+    public async update(id: string, event: RestaurantEvent): Promise<RestaurantEvent> {
         this.log.info('Update a restaurantEvent');
         event.id = id;
-        return this.restaurantEventRepository.save(event);
+        return await this.restaurantEventRepository.save(event);
     }
 
     public async delete(id: string): Promise<void> {
