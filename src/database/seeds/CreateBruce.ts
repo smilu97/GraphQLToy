@@ -3,6 +3,7 @@ import { Connection } from 'typeorm';
 import { User } from '../../../src/api/models/User';
 import { Factory, Seed } from '../../lib/seed/types';
 import { UserService } from '../../api/services/UserService';
+import { Restaurant } from '../../api/models/Restaurant';
 
 export class CreateBruce implements Seed {
 
@@ -29,13 +30,20 @@ export class CreateBruce implements Seed {
         // const connection = await factory.getConnection();
         const em = connection.createEntityManager();
 
-        const user = new User();
-        user.email = 'bruce.wayne@wayne-enterprises.com';
-        user.name = 'Bruce';
-        user.password = UserService.encryptPassword('bruce1234');
-        user.role = 'USER';
+        let user = new User();
+        user.email = 'frog';
+        user.name = 'frog';
+        user.password = UserService.encryptPassword('1234');
+        user.role = 'ADMIN';
         user.type = 'local';
-        return await em.save(user);
+        user = await em.save(user);
+
+        let restaurants = await factory(Restaurant)().seedMany(3);
+        restaurants = await em.save(restaurants);
+        user.restaurants = restaurants;
+        user = await em.save(user);
+
+        return user;
     }
 
 }
