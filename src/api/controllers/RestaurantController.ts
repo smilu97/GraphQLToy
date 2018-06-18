@@ -1,5 +1,5 @@
 import {
-    Get, JsonController, Body, Post, Authorized, CurrentUser
+    Get, JsonController, Body, Post, Authorized, CurrentUser, Param
 } from 'routing-controllers';
 import { Restaurant } from '../models/Restaurant';
 import { RestaurantService } from '../services/RestaurantService';
@@ -15,7 +15,6 @@ export class RestaurantController {
         private restaurantEventService: RestaurantEventService
     ) { }
 
-    @Authorized()
     @Get()
     public async find(): Promise<{
         success: boolean,
@@ -32,6 +31,33 @@ export class RestaurantController {
             return {
                 success: false,
                 error: 'Error occured while getting restaurants',
+            };
+        }
+    }
+
+    @Get('/<id:string>')
+    public async findById( @Param('id') id: string ): Promise<{
+        success: boolean,
+        restaurant?: Restaurant,
+        error?: string,
+    }> {
+        try {
+            const restaurant = await this.restaurantService.findOne(id);
+            if (restaurant) {
+                return {
+                    success: true,
+                    restaurant,
+                };
+            } else {
+                return {
+                    success: false,
+                    error: `Restaurant id ${id} not found`,
+                };
+            }
+        } catch (e) {
+            return {
+                success: false,
+                error: 'Failed to find a restaurant',
             };
         }
     }
