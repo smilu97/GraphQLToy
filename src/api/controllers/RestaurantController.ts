@@ -35,6 +35,26 @@ export class RestaurantController {
         }
     }
 
+    @Get('/events')
+    public async findEvents(): Promise<{
+        success: boolean,
+        events?: RestaurantEvent[],
+        error?: string,
+    }> {
+        try {
+            const events = await this.restaurantEventService.find();
+            return {
+                success: true,
+                events,
+            };
+        } catch (e) {
+            return {
+                success: false,
+                error: 'Error occured while getting events',
+            };
+        }
+    }
+
     @Get('/:id')
     public async findById( @Param('id') id: string ): Promise<{
         success: boolean,
@@ -58,26 +78,6 @@ export class RestaurantController {
             return {
                 success: false,
                 error: 'Failed to find a restaurant',
-            };
-        }
-    }
-
-    @Get('/events')
-    public async findEvents(): Promise<{
-        success: boolean,
-        events?: RestaurantEvent[],
-        error?: string,
-    }> {
-        try {
-            const events = await this.restaurantEventService.find();
-            return {
-                success: true,
-                events,
-            };
-        } catch (e) {
-            return {
-                success: false,
-                error: 'Error occured while getting events',
             };
         }
     }
