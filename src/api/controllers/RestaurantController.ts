@@ -55,7 +55,7 @@ export class RestaurantController {
         }
     }
 
-    @Get('/:id')
+    @Get('/detail/:id')
     public async findById( @Param('id') id: string ): Promise<{
         success: boolean,
         restaurant?: Restaurant,
