@@ -16,16 +16,14 @@ export class CreateUsers implements Seed {
 
         const areas = await factory(RestaurantArea)().seedMany(5);
         await times(10, async (n) => {
-            const restaurant = await factory(Restaurant)().make();
+            let restaurant = await factory(Restaurant)().make();
             restaurant.areas = [areas[n % 5], areas[(n + 1) % 5]];
             restaurant.owner = users[n];
-            em.save(restaurant);
-            const events = await factory(RestaurantEvent)().seedMany(3);
-            await times(3, async (idx) => {
-                events[idx].publisher = users[(n + 1) % 10];
-                events[idx].restaurant = restaurant;
-                return await em.save(events[idx]);
-            });
+            restaurant = await em.save(restaurant);
+            await factory(RestaurantEvent)({
+                restaurantId: restaurant.id,
+                publisherId: users[(n + 1) % 10].id,
+            }).seedMany(3);
         });
     }
 

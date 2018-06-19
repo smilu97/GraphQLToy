@@ -19,6 +19,7 @@ export function currentUserChecker(connection: Connection): (action: Action) => 
                 id,
             },
         });
+        action.request.user = user;
         if (user) {
             log.info('Current user is ', user.toString());
         } else {

@@ -16,9 +16,16 @@ export class RestaurantService {
         @Logger(__filename) private log: LoggerInterface
     ) { }
 
-    public find(): Promise<Restaurant[]> {
+    public find(where: any = {}): Promise<Restaurant[]> {
         this.log.info('Find all restaurants');
-        return this.restaurantRepository.find();
+        return this.restaurantRepository.find({
+            where,
+        });
+    }
+
+    public async findWithAreaId(id: string): Promise<Restaurant[]> {
+        this.log.info(`Find all restaurants of area ${id}`);
+        return await this.restaurantRepository.findWithAreaId(id);
     }
 
     public findByName(name: string): Promise<Restaurant[]> {

@@ -31,7 +31,7 @@ export class UserService {
 
     public find(): Promise<User[]> {
         this.log.info('Find all users');
-        return this.userRepository.find({ relations: ['pets'] });
+        return this.userRepository.find();
     }
 
     public findOne(id: string): Promise<User | undefined> {

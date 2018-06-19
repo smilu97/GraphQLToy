@@ -18,8 +18,7 @@ export class RestaurantEventRepository extends Repository<RestaurantEvent> {
             .select()
             .leftJoin('restaurant', 'R', 'E.restaurantId = R.id')
             .leftJoin('restaurant_areas_restaurant_area', 'RA', 'R.id = RA.restaurantId')
-            .leftJoin('restaurant_area', 'A', 'A.id = RA.restaurantAreaId')
-            .where(`R.name = ?`);
+            .leftJoin('restaurant_area', 'A', 'A.id = RA.restaurantAreaId');
 
         if (name) {
             query = query.where('R.name = :name', { name });
@@ -42,8 +41,16 @@ export class RestaurantEventRepository extends Repository<RestaurantEvent> {
             }
         }
 
-        console.log(query.getQuery());
+        // console.log(query.getQuery());
 
         return await query.getMany();
+    }
+
+    public async findByRestaurantIds(id: string): Promise<RestaurantEvent[]> {
+        return await this.find({
+            where: {
+                restaurantId: id,
+            },
+        });
     }
 }

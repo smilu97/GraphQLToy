@@ -13,12 +13,18 @@ export class RestaurantEvent {
     @Column()
     public name: string;
 
+    @Column()
+    public publisherId: string;
+
+    @Column()
+    public restaurantId: string;
+
     @ManyToOne(type => Restaurant, restaurant => restaurant.events)
-    @JoinColumn()
+    @JoinColumn({ name: 'restaurantId' })
     public restaurant: Restaurant;
 
     @ManyToOne(type => User, user => user.events)
-    @JoinColumn()
+    @JoinColumn({ name: 'publisherId' })
     public publisher: User;
 
     public toString(): string {

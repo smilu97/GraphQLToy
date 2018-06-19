@@ -62,7 +62,7 @@ export class RestaurantController {
         error?: string,
     }> {
         try {
-            const events = await this.restaurantEventService.findOfRestaurants(id);
+            const events = await this.restaurantEventService.findByRestaurantIds(id);
             return {
                 success: true,
                 events,

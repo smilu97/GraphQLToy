@@ -18,6 +18,9 @@ export class Restaurant {
     @Column()
     public category: string;
 
+    @Column()
+    public ownerId: string;
+
     @ManyToMany(type => RestaurantArea, area => area.restaurants)
     @JoinTable()
     public areas: RestaurantArea[];
@@ -26,7 +29,7 @@ export class Restaurant {
     public events: RestaurantEvent[];
 
     @ManyToOne(type => User, user => user.restaurants)
-    @JoinColumn()
+    @JoinColumn({ name: 'ownerId'})
     @IsNotEmpty()
     public owner: User;
 
