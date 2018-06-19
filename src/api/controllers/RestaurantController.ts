@@ -55,6 +55,34 @@ export class RestaurantController {
         }
     }
 
+    @Authorized()
+    @Post('/event')
+    public async createEvent( @CurrentUser() user: User, @Body() body: any ): Promise<{
+        success: boolean,
+        event?: RestaurantEvent,
+        error?: string,
+    }> {
+        try {
+            body.publisherId = user.id;
+            const resEvent = await this.restaurantEventService.create(body);
+            if (resEvent) {
+                return {
+                    success: true,
+                    event: resEvent,
+                };
+            }
+            return {
+                success: false,
+                error: 'Failed to create event',
+            };
+        } catch (e) {
+            return {
+                success: false,
+                error: 'Failed to create event',
+            };
+        }
+    }
+
     @Get('/detail/:id')
     public async findById( @Param('id') id: string ): Promise<{
         success: boolean,
