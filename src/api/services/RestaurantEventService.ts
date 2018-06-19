@@ -4,6 +4,7 @@ import { OrmRepository } from 'typeorm-typedi-extensions';
 import { Logger, LoggerInterface } from '../../decorators/Logger';
 import { RestaurantEventRepository } from '../repositories/RestaurantEventRepository';
 import { RestaurantEvent } from '../models/RestaurantEvent';
+import { Restaurant } from '../models/Restaurant';
 
 @Service()
 export class RestaurantEventService {
@@ -16,6 +17,15 @@ export class RestaurantEventService {
     public async find(): Promise<RestaurantEvent[]> {
         this.log.info('Find all restaurantEvents');
         return await this.restaurantEventRepository.find();
+    }
+
+    public async findOfRestaurants(restaurantId: string): Promise<RestaurantEvent[]> {
+        this.log.info('Find all restaurantEvents');
+        return await this.restaurantEventRepository.find({
+            where: {
+                restaurantId,
+            },
+        });
     }
 
     public async findByName(name: string): Promise<RestaurantEvent[]> {

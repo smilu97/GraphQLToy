@@ -55,6 +55,26 @@ export class RestaurantController {
         }
     }
 
+    @Get('/:id/events')
+    public async findEventsOfRestaurant( @Param('id') id: string ): Promise<{
+        success: boolean,
+        events?: RestaurantEvent[],
+        error?: string,
+    }> {
+        try {
+            const events = await this.restaurantEventService.findOfRestaurants(id);
+            return {
+                success: true,
+                events,
+            };
+        } catch (e) {
+            return {
+                success: false,
+                error: 'Error occured while getting events',
+            };
+        }
+    }
+
     @Authorized()
     @Post('/event')
     public async createEvent( @CurrentUser() user: User, @Body() body: any ): Promise<{
